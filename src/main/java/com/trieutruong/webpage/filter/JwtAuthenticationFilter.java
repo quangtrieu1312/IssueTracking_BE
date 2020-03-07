@@ -31,11 +31,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			String jwt = getJwtFromRequest(request);
+			String jwt = tokenProvider.getJwtFromRequest(request);
 
 			if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 				String userId = tokenProvider.getUserIdFromJWT(jwt);
-				User user = userService.loadUserById(userId);
+				User user = userService.findByUserId(userId);
 				if (user != null) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							user, null, user.getAuthorities());
@@ -49,14 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
-	}
-
-	private String getJwtFromRequest(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		for (Cookie it:cookies)
-			if (it.getName().equals("AUTH_JWT"))
-				return it.getValue();
-		return null;
 	}
 
 }

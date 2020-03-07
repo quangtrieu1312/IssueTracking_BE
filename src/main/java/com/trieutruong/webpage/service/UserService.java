@@ -16,11 +16,15 @@ import com.trieutruong.webpage.request.SignUpRequest;
 public interface UserService extends UserDetailsService {
 	void login(LoginRequest req, HttpServletRequest request, HttpServletResponse response);
 
-	User loadUserById(String userId);
+	User findByUserId(String userId);
 
 	void signUp(SignUpRequest req) throws IOException;
 
-	void activate(String activateToken) throws BadInputException;
+	void activateByToken(String activateToken) throws BadInputException;
 
-	void sendActivateToken(ActivateRequest req) throws IOException;
+	void sendActivateToken(String username, String email) throws IOException;
+	
+	User findByJWT(String jwt) throws BadInputException;
+	
+	User findByHttpRequest(HttpServletRequest httpRequest) throws BadInputException;
 }

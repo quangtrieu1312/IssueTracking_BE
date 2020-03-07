@@ -2,6 +2,9 @@ package com.trieutruong.webpage.util;
 
 import java.util.Date;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Component;
 
 import com.trieutruong.webpage.constant.JwtConstants;
@@ -19,7 +22,7 @@ public class JwtTokenProvider {
 	public String generateToken(User user) {
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
-		return Jwts.builder().setSubject(user.getUser_id()).setIssuedAt(now)
+		return Jwts.builder().setSubject(user.getUserId()).setIssuedAt(now)
 				.setExpiration(expiryDate).signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
 	}
 
@@ -48,4 +51,12 @@ public class JwtTokenProvider {
         }
         return false;
     }
+	
+	public String getJwtFromRequest(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		for (Cookie cookie :cookies)
+			if (cookie.getName().equals("AUTH_JWT"))
+				return cookie.getValue();
+		return null;
+	}
 }

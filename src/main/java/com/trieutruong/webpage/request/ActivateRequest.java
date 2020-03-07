@@ -1,7 +1,12 @@
 package com.trieutruong.webpage.request;
 
+import javax.validation.constraints.NotBlank;
+
 public class ActivateRequest {
+	@NotBlank
 	private String email;
+	
+	@NotBlank
 	private String username;
 
 	public ActivateRequest() {

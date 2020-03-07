@@ -1,9 +1,15 @@
 package com.trieutruong.webpage.request;
 
+import javax.validation.constraints.NotBlank;
+
 public class SignUpRequest {
+	@NotBlank
 	private String email;
+	@NotBlank
 	private String username;
+	@NotBlank
 	private String password;
+	@NotBlank
 	private String password2;
 
 	public SignUpRequest() {

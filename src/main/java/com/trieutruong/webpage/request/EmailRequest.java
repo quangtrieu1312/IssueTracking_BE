@@ -1,7 +1,11 @@
 package com.trieutruong.webpage.request;
 
+import javax.validation.constraints.NotBlank;
+
 public class EmailRequest {
+	@NotBlank
 	private String from;
+	@NotBlank
 	private String to;
 	private String subject;
 	private String content;

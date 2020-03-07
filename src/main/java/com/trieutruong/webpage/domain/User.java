@@ -17,7 +17,7 @@ public class User implements UserDetails {
 	 */
 	private static final long serialVersionUID = -1220437047046216999L;
 
-	private String user_id;
+	private String userId;
 
 	private String email;
 	private String username;
@@ -26,8 +26,8 @@ public class User implements UserDetails {
 
 	private List<String> roles;
 
-	public User(String user_id, String email, String username, String password, List<String> roles) {
-		this.user_id = user_id;
+	public User(String userId, String email, String username, String password, List<String> roles) {
+		this.userId = userId;
 		this.email = email;
 		this.username = username;
 		this.password = password;
@@ -60,12 +60,12 @@ public class User implements UserDetails {
 		this.enabled = enabled;
 	}
 
-	public String getUser_id() {
-		return user_id;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUser_id(String user_account_id) {
-		this.user_id = user_account_id;
+	public void setUserId(String user_account_id) {
+		this.userId = user_account_id;
 	}
 
 	public List<String> getRoles() {

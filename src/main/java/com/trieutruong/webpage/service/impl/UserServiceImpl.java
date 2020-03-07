@@ -1,7 +1,5 @@
 package com.trieutruong.webpage.service.impl;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-
 import java.io.IOException;
 
 import javax.servlet.http.Cookie;
@@ -16,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -72,10 +71,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User loadUserById(String userId) {
-		User user = userRepository.findByUser_id(userId);
-		if (user == null)
-			redirectedUrl("/login");
+	public User findByUserId(String userId) {
+		User user = userRepository.findByUserId(userId);
 		return user;
 	}
 
@@ -88,19 +85,17 @@ public class UserServiceImpl implements UserService {
 		if (!isValidUsername(req.getUsername()) || !isValidPassword(req.getPassword()))
 			return;
 		String userId = RandomUtil.generateId();
-		while (userRepository.findByUser_id(userId) != null)
+		while (userRepository.findByUserId(userId) != null)
 			userId = RandomUtil.generateId();
 		User user = new User(userId, req.getEmail(), req.getUsername(), encoder.encode(req.getPassword()),
 				UserRole.DEFAULT);
 		userRepository.save(user);
 		String activateToken = tokenProvider.generateToken(user);
 		EmailRequest emailReq = new EmailRequest("no-reply@the.crip", user.getEmail(), "Activate account",
-				"<html>"
-				+"<h1>Welcome to the crib!</h1>"
-				+"To activate your account, click "
-				+"<a href=\"http://192.168.1.103:8080/activate?activateToken="+activateToken+"\">here</a>"
-				+ "</html>");
-		emailService.sendEmail(emailReq);
+				"<html>" + "<h1>Welcome to the crib!</h1>" + "To activate your account, click "
+						+ "<a href=\"http://192.168.1.103:8080/activate?activateToken=" + activateToken + "\">here</a>"
+						+ "</html>");
+		emailService.send(emailReq);
 
 	}
 
@@ -114,7 +109,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void activate(String activateToken) throws BadInputException {
+	public void activateByToken(String activateToken) throws BadInputException {
 		String jwt = activateToken;
 
 		if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
@@ -125,18 +120,32 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void sendActivateToken(ActivateRequest req) throws IOException {
-		User user = userRepository.findByUsername(req.getUsername());
-		if (!user.getEmail().equals(req.getEmail()))
-			return;
+	public void sendActivateToken(String username, String email) throws IOException {
+		User user = userRepository.findByUsername(username);
+		if (!user.getEmail().equals(email))
+			return; //throws Exception
 		String activateToken = tokenProvider.generateToken(user);
 		EmailRequest emailReq = new EmailRequest("no-reply@the.crip", user.getEmail(), "Activate account",
-				"<html>"
-				+"<h1>Welcome to the crib!</h1>"
-				+"To activate your account, click "
-				+"<a href=\"http://192.168.1.103:8080/activate?activateToken="+activateToken+"\">here</a>"
-				+"</html>");
-		emailService.sendEmail(emailReq);
+				"<html>" + "<h1>Welcome to the crib!</h1>" + "To activate your account, click "
+						+ "<a href=\"http://192.168.1.103:8080/activate?activateToken=" + activateToken + "\">here</a>"
+						+ "</html>");
+		emailService.send(emailReq);
+	}
+
+	@Override
+	public User findByJWT(String jwt) throws BadInputException {
+		if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+			String userId = tokenProvider.getUserIdFromJWT(jwt);
+			User user = this.findByUserId(userId);
+			return user;
+			}
+		return null;
+	}
+
+	@Override
+	public User findByHttpRequest(HttpServletRequest httpRequest) throws BadInputException {
+		String jwt = tokenProvider.getJwtFromRequest(httpRequest);
+		return findByJWT(jwt);
 	}
 
 }

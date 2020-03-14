@@ -1,28 +1,26 @@
 package com.trieutruong.webpage.response;
 
 import com.trieutruong.webpage.model.GeneralModelResponse;
+import com.trieutruong.webpage.model.TicketInfo;
 
 import java.util.List;
 
-import com.trieutruong.webpage.domain.Ticket;
-
 public class TicketResponse extends GeneralModelResponse{
-	private List<Ticket> tickets;
+	private List<TicketInfo> ticketsInfo;
 	
-	public TicketResponse(String msg, List<Ticket> tickets)
+	public TicketResponse(String msg, List<TicketInfo> ticketsInfo)
 	{
 		super.setStatus(Boolean.TRUE.toString());
 		super.setMsg(msg);
-		this.tickets = tickets;
+		this.ticketsInfo = ticketsInfo;
 	}
 
-	public List<Ticket> getTickets() {
-		return tickets;
+	public List<TicketInfo> getTicketsInfo() {
+		return ticketsInfo;
 	}
 
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
+	public void setTicketsInfo(List<TicketInfo> ticketsInfo) {
+		this.ticketsInfo = ticketsInfo;
 	}
-	
 	
 }

@@ -16,7 +16,7 @@ public class Ticket {
 	private String description;
 	private Alert alert;
 	private List<String> emails;
-	private List<String> userIds;
+	private List<String> memberIds;
 
 	public Ticket() {
 
@@ -31,7 +31,7 @@ public class Ticket {
 		this.description = description;
 		this.alert = alert;
 		this.emails = emails;
-		this.userIds = userIds;
+		this.memberIds = userIds;
 	}
 
 	public String getStatus() {
@@ -74,12 +74,12 @@ public class Ticket {
 		this.ticketId = ticketId;
 	}
 
-	public List<String> getUserIds() {
-		return userIds;
+	public List<String> getMemberIds() {
+		return memberIds;
 	}
 
-	public void setUserIds(List<String> userIds) {
-		this.userIds = userIds;
+	public void setMemberIds(List<String> memberIds) {
+		this.memberIds = memberIds;
 	}
 
 	public String getOwnerId() {

@@ -36,7 +36,7 @@ public class Alert {
 		return cronExpression;
 	}
 
-	public void setCronExpression(String cron) {
+	public void setCronExpression(String cronExpression) {
 		this.cronExpression = cronExpression;
 	}
 }

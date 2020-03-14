@@ -1,21 +1,43 @@
-package com.trieutruong.webpage.request;
+package com.trieutruong.webpage.model;
 
 import java.util.List;
 
-import com.trieutruong.webpage.constant.TicketStatus;
-import com.trieutruong.webpage.model.Alert;
-
-public class TicketRequest {
-
+public class TicketInfo {
+	private String ticketId;
+	private String owner;
 	private String name;
-	private String status = TicketStatus.DEFAULT;
+	private String status;
 	private String description;
 	private Alert alert;
 	private List<String> emails;
 	private List<String> members;
 
-	public TicketRequest() {
+	public TicketInfo() {
 
+	}
+
+	public String getTicketId() {
+		return ticketId;
+	}
+
+	public void setTicketId(String ticketId) {
+		this.ticketId = ticketId;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getStatus() {
@@ -48,14 +70,6 @@ public class TicketRequest {
 
 	public void setEmails(List<String> emails) {
 		this.emails = emails;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public List<String> getMembers() {

@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trieutruong.webpage.domain.Ticket;
+import com.trieutruong.webpage.domain.User;
 import com.trieutruong.webpage.exception.BadInputException;
 import com.trieutruong.webpage.model.GeneralModelResponse;
+import com.trieutruong.webpage.model.TicketInfo;
 import com.trieutruong.webpage.request.LoginRequest;
 import com.trieutruong.webpage.request.TicketRequest;
 import com.trieutruong.webpage.response.TicketResponse;
+import com.trieutruong.webpage.response.UserResponse;
 import com.trieutruong.webpage.request.SignUpRequest;
 import com.trieutruong.webpage.service.EmailService;
 import com.trieutruong.webpage.service.QuartzSchedulerService;
@@ -39,15 +42,17 @@ public class WebpageController {
 
 	@Autowired
 	TicketService ticketService;
-	
+
 	@Autowired
 	QuartzSchedulerService quartzSchedulerService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String homePage() throws SchedulerException, IOException {
-	/*	List<Ticket> tickets = ticketService.findByAlertMode(Boolean.TRUE.toString());
-		for (Ticket ticket : tickets) 
-			quartzSchedulerService.startJob(ticket.getTicketId());*/
+		/*
+		 * List<Ticket> tickets =
+		 * ticketService.findByAlertMode(Boolean.TRUE.toString()); for (Ticket ticket :
+		 * tickets) quartzSchedulerService.startJob(ticket.getTicketId());
+		 */
 		return "Home page";
 	}
 
@@ -57,7 +62,7 @@ public class WebpageController {
 		userService.login(req, request, response);
 		return new GeneralModelResponse().successResponse("Successful login");
 	}
-	
+
 	@RequestMapping(value = "/testUser", method = RequestMethod.GET)
 	public String testUserPage() {
 		return "testUser";
@@ -74,8 +79,23 @@ public class WebpageController {
 		return new GeneralModelResponse().successResponse("Successful signup");
 	}
 
-	@RequestMapping(value = "/token", method = RequestMethod.PUT)
-	public GeneralModelResponse activate(@RequestParam String activateToken) throws BadInputException {
+	@RequestMapping(value = "/user/id/{userIds}", method = RequestMethod.GET)
+	public UserResponse getUserByUserIds(@PathVariable(value = "userIds", required = true) List<String> userIds)
+			throws BadInputException {
+		List<User> users = userService.findByUserIds(userIds);
+		return new UserResponse("Successfully get user info by id", users);
+	}
+
+	@RequestMapping(value = "/user/username/{usernames}", method = RequestMethod.GET)
+	public UserResponse getUserByUsernames(@PathVariable(value = "usernames", required = true) List<String> usernames)
+			throws BadInputException {
+		List<User> users = userService.findByUsernames(usernames);
+		return new UserResponse("Successfully get user info by username", users);
+	}
+
+	@RequestMapping(value = "/token/{activateToken}", method = RequestMethod.GET)
+	public GeneralModelResponse activate(@PathVariable(value = "activateToken", required = true) String activateToken)
+			throws BadInputException {
 		userService.activateByToken(activateToken);
 		return new GeneralModelResponse().successResponse("Successful activate");
 	}
@@ -88,9 +108,24 @@ public class WebpageController {
 	}
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.GET)
-	public TicketResponse getTicket(HttpServletRequest httpRequest) throws BadInputException {
+	public TicketResponse getAllTicket(HttpServletRequest httpRequest) throws BadInputException {
 		List<Ticket> tickets = ticketService.findByHttpRequest(httpRequest);
-		return new TicketResponse("Successful get tickets", tickets);
+		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
+		return new TicketResponse("Successful get tickets", ticketsInfo);
+	}
+
+	@RequestMapping(value = "/ticket/{ticketId}", method = RequestMethod.GET)
+	public TicketResponse getTicket(@PathVariable(value = "ticketId") String ticketId, HttpServletRequest httpRequest)
+			throws BadInputException {
+		Ticket ticket = ticketService.findByTicketId(ticketId);
+		User user = userService.findByHttpRequest(httpRequest);
+		if (user.getUserId().equals(ticket.getOwnerId())) {
+			List<Ticket> tickets = new ArrayList<Ticket>();
+			tickets.add(ticket);
+			List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
+			return new TicketResponse("Successful get ticket", ticketsInfo);
+		} else
+			return null;
 	}
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.POST)
@@ -99,7 +134,8 @@ public class WebpageController {
 		Ticket ticket = ticketService.create(request, httpRequest);
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
-		return new TicketResponse("Successful post ticket", tickets);
+		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
+		return new TicketResponse("Successful post ticket", ticketsInfo);
 	}
 
 	@RequestMapping(value = "/ticket/{ticketId}", method = RequestMethod.PUT)
@@ -108,6 +144,7 @@ public class WebpageController {
 		Ticket ticket = ticketService.update(ticketId, request, httpRequest);
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
-		return new TicketResponse("Successful update ticket", tickets);
+		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
+		return new TicketResponse("Successful update ticket", ticketsInfo);
 	}
 }

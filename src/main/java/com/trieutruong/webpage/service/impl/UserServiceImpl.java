@@ -1,6 +1,7 @@
 package com.trieutruong.webpage.service.impl;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -71,11 +72,22 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User findByUserId(String userId) {
+	public User findByUserId(String userId) throws BadInputException {
 		User user = userRepository.findByUserId(userId);
+		if (user == null) {
+			throw new BadInputException("No user found");
+		}
 		return user;
 	}
 
+	@Override
+	public List<User> findByUserIds(List<String> userIds) throws BadInputException {
+		List<User> users = userRepository.findByUserIds(userIds);
+		if (users == null) {
+			throw new BadInputException("No user found");
+		}
+		return users;
+	}
 	@Override
 	public void signUp(SignUpRequest req) throws IOException {
 		if (userRepository.findByUsername(req.getUsername()) != null)
@@ -93,8 +105,8 @@ public class UserServiceImpl implements UserService {
 		String activateToken = tokenProvider.generateToken(user);
 		EmailRequest emailReq = new EmailRequest("no-reply@the.crip", user.getEmail(), "Activate account",
 				"<html>" + "<h1>Welcome to the crib!</h1>" + "To activate your account, click "
-						+ "<a href=\"http://192.168.1.103:8080/activate?activateToken=" + activateToken + "\">here</a>"
-						+ "</html>");
+						+ "<a href=\"https://mysterious-reaches-08183.herokuapp.com/token/" + activateToken
+						+ "\">here</a>" + "</html>");
 		emailService.send(emailReq);
 
 	}
@@ -123,7 +135,7 @@ public class UserServiceImpl implements UserService {
 	public void sendActivateToken(String username, String email) throws IOException {
 		User user = userRepository.findByUsername(username);
 		if (!user.getEmail().equals(email))
-			return; //throws Exception
+			return; // throws Exception
 		String activateToken = tokenProvider.generateToken(user);
 		EmailRequest emailReq = new EmailRequest("no-reply@the.crip", user.getEmail(), "Activate account",
 				"<html>" + "<h1>Welcome to the crib!</h1>" + "To activate your account, click "
@@ -138,7 +150,7 @@ public class UserServiceImpl implements UserService {
 			String userId = tokenProvider.getUserIdFromJWT(jwt);
 			User user = this.findByUserId(userId);
 			return user;
-			}
+		}
 		return null;
 	}
 
@@ -146,6 +158,15 @@ public class UserServiceImpl implements UserService {
 	public User findByHttpRequest(HttpServletRequest httpRequest) throws BadInputException {
 		String jwt = tokenProvider.getJwtFromRequest(httpRequest);
 		return findByJWT(jwt);
+	}
+
+	@Override
+	public List<User> findByUsernames(List<String> usernames) throws BadInputException {
+		List<User> users = userRepository.findByUsernames(usernames);
+		if (users == null || users.isEmpty()) {
+			throw new BadInputException("No users found");
+		}
+		return users;
 	}
 
 }

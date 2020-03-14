@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.trieutruong.webpage.domain.Ticket;
 import com.trieutruong.webpage.exception.BadInputException;
+import com.trieutruong.webpage.model.TicketInfo;
 import com.trieutruong.webpage.request.TicketRequest;
 
 public interface TicketService {
@@ -28,4 +29,5 @@ public interface TicketService {
 
 	Ticket findByTicketId(String ticketId);
 
+	List<TicketInfo> convertTicketToTicketInfo(List<Ticket> tickets) throws BadInputException;
 }

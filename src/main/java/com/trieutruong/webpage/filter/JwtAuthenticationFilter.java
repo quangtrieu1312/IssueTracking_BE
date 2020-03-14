@@ -42,6 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
 					SecurityContextHolder.getContext().setAuthentication(authentication);
+					
+					response.addHeader("Cache-Control", "no-cache");
+					response.addHeader("Access-Control-Max-Age", "3600" );
 				}
 			}
 		} catch (Exception ex) {

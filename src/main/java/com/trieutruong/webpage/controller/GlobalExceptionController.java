@@ -2,6 +2,7 @@ package com.trieutruong.webpage.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.SchedulerException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,10 +26,16 @@ public class GlobalExceptionController {
 		ExceptionModel response = new ExceptionModel("Wrong username/password", ex.getMessage());
 		return new ResponseEntity<ExceptionModel>(response, HttpStatus.UNAUTHORIZED);
 	}
-	
+
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ExceptionModel> handleForbiddenException(HttpServletRequest request, Exception ex) {
 		ExceptionModel response = new ExceptionModel("No authorization to access page", ex.getMessage());
 		return new ResponseEntity<ExceptionModel>(response, HttpStatus.FORBIDDEN);
+	}
+
+	@ExceptionHandler(SchedulerException.class)
+	public ResponseEntity<ExceptionModel> handleSchedulerExceptionException(HttpServletRequest request, Exception ex) {
+		ExceptionModel response = new ExceptionModel("Cannot schedule ticket", ex.getMessage());
+		return new ResponseEntity<ExceptionModel>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

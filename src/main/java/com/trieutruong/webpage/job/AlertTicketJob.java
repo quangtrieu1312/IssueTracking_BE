@@ -24,7 +24,7 @@ public class AlertTicketJob implements Job {
 			ticketId = context.getJobDetail().getKey().getName();
 			Ticket ticket = ticketService.findByTicketId(ticketId);
 			for (String email : ticket.getEmails()) {
-				emailService.send("no-reply@the.crip.com", email, "Ticket alert",
+				emailService.send("no-reply@trieutruong.com", email, "Ticket alert",
 						"Ticket name: " + ticket.getName() + "\nTicket description: " + ticket.getDescription());
 			}
 		} catch (Exception e) {

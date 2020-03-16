@@ -130,8 +130,11 @@ public class WebpageController {
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.POST)
 	public TicketResponse postTicket(@RequestBody TicketRequest request, HttpServletRequest httpRequest)
-			throws BadInputException {
+			throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.create(request, httpRequest);
+		if (ticket.getAlert().getMode()== true){
+			quartzSchedulerService.startJob(ticket.getTicketId());
+		}
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
 		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
@@ -140,8 +143,15 @@ public class WebpageController {
 
 	@RequestMapping(value = "/ticket/{ticketId}", method = RequestMethod.PUT)
 	public TicketResponse putTicket(@PathVariable(value = "ticketId") String ticketId,
-			@RequestBody TicketRequest request, HttpServletRequest httpRequest) throws BadInputException {
+			@RequestBody TicketRequest request, HttpServletRequest httpRequest) throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.update(ticketId, request, httpRequest);
+		if (ticket.getAlert().getMode()== true){
+			quartzSchedulerService.startJob(ticket.getTicketId());
+		}
+		else
+		{
+			quartzSchedulerService.stopJob(ticket.getTicketId());
+		}
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
 		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);

@@ -19,4 +19,6 @@ public interface TicketRepository extends MongoRepository<Ticket, String>, Ticke
 	@Query("{ 'alert.mode' : ?0 }")
 	List<Ticket> findByAlertMode(String mode);
 
+	List<Ticket> findByAlertMode(Boolean mode);
+
 }

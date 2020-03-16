@@ -43,7 +43,7 @@ public class QuartzSchedulerConfig {
 	@PostConstruct
 	public void initScript() throws Exception {
 		System.out.print("Init quartz");
-		List<Ticket> tickets = ticketService.findByAlertMode(Boolean.TRUE.toString());
+		List<Ticket> tickets = ticketService.findByAlertMode(Boolean.TRUE);
 		for (Ticket ticket : tickets)
 			quartzSchedulerService.startJob(ticket.getTicketId());
 	}

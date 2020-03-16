@@ -104,7 +104,7 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public List<Ticket> findByAlertMode(String mode) {
+	public List<Ticket> findByAlertMode(Boolean mode) {
 		return ticketRepository.findByAlertMode(mode);
 	}
 

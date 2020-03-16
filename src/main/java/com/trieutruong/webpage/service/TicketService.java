@@ -25,9 +25,10 @@ public interface TicketService {
 
 	Ticket update(String ticketId, TicketRequest request, HttpServletRequest httpRequest) throws BadInputException;
 
-	List<Ticket> findByAlertMode(String string);
+	List<Ticket> findByAlertMode(Boolean mode);
 
 	Ticket findByTicketId(String ticketId);
 
 	List<TicketInfo> convertTicketToTicketInfo(List<Ticket> tickets) throws BadInputException;
+
 }

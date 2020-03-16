@@ -19,20 +19,6 @@ import com.trieutruong.webpage.service.TicketService;
 
 @Configuration
 public class QuartzSchedulerConfig {
-	@Bean
-	public Properties quartzProperties() throws IOException {
-		PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-		propertiesFactoryBean.setLocation(new ClassPathResource("/quartz.properties"));
-		propertiesFactoryBean.afterPropertiesSet();
-		return propertiesFactoryBean.getObject();
-	}
-	
-	@Bean
-	public SchedulerFactoryBean schedulerFactoryBean() throws IOException {        
-	    SchedulerFactoryBean scheduler = new SchedulerFactoryBean();  
-	    scheduler.setQuartzProperties(quartzProperties());
-	    return scheduler;
-	}
 
 	@Autowired
 	TicketService ticketService;

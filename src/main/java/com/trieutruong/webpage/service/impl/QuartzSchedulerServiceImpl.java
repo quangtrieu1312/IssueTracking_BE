@@ -1,6 +1,8 @@
 package com.trieutruong.webpage.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -21,21 +23,20 @@ import com.trieutruong.webpage.service.QuartzSchedulerService;
 import com.trieutruong.webpage.service.TicketService;
 
 @Service
-public class QuartzSchedulerServiceImpl implements QuartzSchedulerService{
-	
+public class QuartzSchedulerServiceImpl implements QuartzSchedulerService {
+
 	@Autowired
 	TicketService ticketService;
-	
+
 	@Autowired
 	Scheduler scheduler;
-	
+
 	@Override
 	public void startJob(String ticketId) throws SchedulerException, IOException {
-		
+
 		Ticket ticket = ticketService.findByTicketId(ticketId);
 		JobKey jobKey = new JobKey(ticket.getTicketId(), ticket.getOwnerId());
 		JobDetail jobDetail = scheduler.getJobDetail(jobKey);
-
 		if (jobDetail != null) {
 			// Job exist, throw sth
 			return;
@@ -48,7 +49,6 @@ public class QuartzSchedulerServiceImpl implements QuartzSchedulerService{
 
 			scheduler.scheduleJob(jobDetail, trigger);
 
-			// update next_run_time for script
 			scheduler.getListenerManager().addJobListener(new AlertTicketJobListener(ticketService));
 		}
 	}
@@ -56,17 +56,15 @@ public class QuartzSchedulerServiceImpl implements QuartzSchedulerService{
 	@Override
 	public void stopJob(String ticketId) throws SchedulerException {
 		Ticket ticket = ticketService.findByTicketId(ticketId);
-		if (ticket == null)
-		{
-			//throw new BadInputException("Can not find script with id: " + script_id);
+		if (ticket == null) {
+			// throw new BadInputException("Can not find script with id: " + script_id);
 			return;
 		}
-		if (ticket.getAlert().getMode().equals(Boolean.FALSE.toString()))
-		{
-	//		throw new BadInputException("Can not stop an already-stopped script!");
+		if (ticket.getAlert().getMode().equals(Boolean.FALSE.toString())) {
+			// throw new BadInputException("Can not stop an already-stopped script!");
 			return;
 		}
-			
+
 		JobKey jobKey = new JobKey(ticket.getTicketId(), ticket.getOwnerId());
 		// scheduler.pauseJob(jobKey);
 
@@ -76,12 +74,11 @@ public class QuartzSchedulerServiceImpl implements QuartzSchedulerService{
 		// https://stackoverflow.com/questions/1933676/quartz-java-resuming-a-job-excecutes-it-many-times
 
 		scheduler.deleteJob(jobKey);
-		
+
 	}
-	
+
 	private JobDetail createJobDetail(Ticket ticket) {
-		return JobBuilder.newJob(AlertTicketJob.class).withIdentity(ticket.getTicketId(), ticket.getOwnerId())
-				.build();
+		return JobBuilder.newJob(AlertTicketJob.class).withIdentity(ticket.getTicketId(), ticket.getOwnerId()).build();
 	}
 
 	private Trigger createTrigger(Ticket ticket) throws IOException {
@@ -91,5 +88,4 @@ public class QuartzSchedulerServiceImpl implements QuartzSchedulerService{
 				.build();
 	}
 
-	
 }

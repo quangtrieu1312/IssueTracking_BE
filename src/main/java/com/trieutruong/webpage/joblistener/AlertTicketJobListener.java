@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.trieutruong.webpage.service.TicketService;
 
-@Service
 public class AlertTicketJobListener implements JobListener{
 	private static final String LISTENER_NAME = "CronJobListener";
 

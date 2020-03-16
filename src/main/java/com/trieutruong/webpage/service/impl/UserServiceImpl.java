@@ -140,10 +140,10 @@ public class UserServiceImpl implements UserService {
 		if (!user.getEmail().equals(email))
 			return; // throws Exception
 		String activateToken = tokenProvider.generateToken(user);
-		EmailRequest emailReq = new EmailRequest("no-reply@the.crip", user.getEmail(), "Activate account",
-				"<html>" + "<h1>Welcome to the crib!</h1>" + "To activate your account, click "
-						+ "<a href=\"http://192.168.1.103:8080/activate?activateToken=" + activateToken + "\">here</a>"
-						+ "</html>");
+		EmailRequest emailReq = new EmailRequest("no-reply@trieutruong.com", user.getEmail(), "Activate account",
+				"<html>" + "<h1>Welcome to my website!</h1>" + "To activate your account, click "
+						+ "<a href=\"https://mysterious-reaches-08183.herokuapp.com/token/" + activateToken
+						+ "\">here</a>" + "</html>");
 		emailService.send(emailReq);
 	}
 

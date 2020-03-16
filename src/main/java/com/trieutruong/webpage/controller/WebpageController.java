@@ -74,9 +74,9 @@ public class WebpageController {
 	}
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
-	public GeneralModelResponse signUp(@RequestBody SignUpRequest req) throws IOException {
+	public GeneralModelResponse signUp(@RequestBody SignUpRequest req) throws IOException, BadInputException {
 		userService.signUp(req);
-		return new GeneralModelResponse().successResponse("Successful signup");
+		return new GeneralModelResponse().successResponse("Successfully signed-up, please check your email to activate account");
 	}
 
 	@RequestMapping(value = "/user/id/{userIds}", method = RequestMethod.GET)

@@ -88,14 +88,17 @@ public class UserServiceImpl implements UserService {
 		}
 		return users;
 	}
+
 	@Override
-	public void signUp(SignUpRequest req) throws IOException {
+	public void signUp(SignUpRequest req) throws IOException, BadInputException {
 		if (userRepository.findByUsername(req.getUsername()) != null)
-			return;
+			throw new BadInputException("Username already exists");
 		if (!req.getPassword().equals(req.getPassword2()))
-			return;
-		if (!isValidUsername(req.getUsername()) || !isValidPassword(req.getPassword()))
-			return;
+			throw new BadInputException("Password doesn't match");
+		if (!isValidUsername(req.getUsername()))
+			throw new BadInputException("Username must have at least 5 characters and no special chars");
+		if (!isValidPassword(req.getPassword()))
+				throw new BadInputException("Password must have at least: 10 character, 1 lowercase, 1 uppercase, 1 number, and 1 special char");
 		String userId = RandomUtil.generateId();
 		while (userRepository.findByUserId(userId) != null)
 			userId = RandomUtil.generateId();
@@ -103,8 +106,8 @@ public class UserServiceImpl implements UserService {
 				UserRole.DEFAULT);
 		userRepository.save(user);
 		String activateToken = tokenProvider.generateToken(user);
-		EmailRequest emailReq = new EmailRequest("no-reply@the.crip", user.getEmail(), "Activate account",
-				"<html>" + "<h1>Welcome to the crib!</h1>" + "To activate your account, click "
+		EmailRequest emailReq = new EmailRequest("no-reply@trieutruong.com", user.getEmail(), "Activate account",
+				"<html>" + "<h1>Welcome to my website!</h1>" + "To activate your account, click "
 						+ "<a href=\"https://mysterious-reaches-08183.herokuapp.com/token/" + activateToken
 						+ "\">here</a>" + "</html>");
 		emailService.send(emailReq);

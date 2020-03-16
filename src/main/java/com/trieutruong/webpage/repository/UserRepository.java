@@ -17,7 +17,7 @@ public interface UserRepository extends MongoRepository<User,String>, UserReposi
 	@Query("{ 'userId' : { $in : ?0 } }")
 	List<User> findByUserIds(List<String> userIds);
 
-	@Query("{ 'username' : {$in: ?0 } }")
+	@Query("{ 'username' : { $in: ?0 } }")
 	List<User> findByUsernames(List<String> usernames);
 	
 }

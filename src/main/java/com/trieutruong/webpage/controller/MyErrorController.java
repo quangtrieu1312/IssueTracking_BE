@@ -14,8 +14,14 @@ public class MyErrorController implements ErrorController {
 	@RequestMapping("/error")
 	public ExceptionModel handleError(HttpServletRequest request) {
 		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-		Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
-		return new ExceptionModel(statusCode.toString(),exception.getMessage());
+//		Exception exception = (Exception) request.getAttribute("javax.servlet.error.exception");
+		if (statusCode == null) {
+			statusCode = 500;
+		}
+//		if (exception == null) {
+//			exception = new Exception();
+//		}
+		return new ExceptionModel(statusCode.toString(), "Unexpected error, please report to admin");
 	}
 
 	@Override

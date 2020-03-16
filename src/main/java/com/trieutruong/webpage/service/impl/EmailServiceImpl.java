@@ -20,7 +20,7 @@ import com.trieutruong.webpage.service.EmailService;
 @PropertySource(value = "classpath:application.properties")
 public class EmailServiceImpl implements EmailService {
 
-	@Value("${spring.sendgrid.api-key}")
+	@Value("${sendgrid.api-key}")
 	String key;
 	
 	@Override

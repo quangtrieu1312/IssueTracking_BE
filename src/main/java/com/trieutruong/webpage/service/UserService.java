@@ -18,7 +18,7 @@ public interface UserService extends UserDetailsService {
 
 	User findByUserId(String userId) throws BadInputException;
 
-	void signUp(SignUpRequest req) throws IOException;
+	void signUp(SignUpRequest req) throws IOException, BadInputException;
 
 	void activateByToken(String activateToken) throws BadInputException;
 

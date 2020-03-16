@@ -60,16 +60,23 @@ public class TicketServiceImpl implements TicketService {
 	@Override
 	public Ticket create(TicketRequest request, HttpServletRequest httpRequest) throws BadInputException {
 		String ticketId = RandomUtil.generateId();
-		User user = userService.findByHttpRequest(httpRequest);
+		User owner = userService.findByHttpRequest(httpRequest);
 		while (ticketRepository.findByTicketId(ticketId) != null) {
 			ticketId = RandomUtil.generateId();
 		}
-		List<User> users = userService.findByUsernames(request.getMembers());
 		List<String> userIds = new ArrayList<String>();
-		for (User userIterator: users) {
-			userIds.add(userIterator.getUserId());
+		try {
+
+			List<User> users = userService.findByUsernames(request.getMembers());
+
+			for (User userIterator : users) {
+				userIds.add(userIterator.getUserId());
+			}
+
+		} catch (Exception e) {
+
 		}
-		Ticket ticket = new Ticket(ticketId, user.getUserId(), request.getName(), request.getStatus(),
+		Ticket ticket = new Ticket(ticketId, owner.getUserId(), request.getName(), request.getStatus(),
 				request.getDescription(), request.getAlert(), request.getEmails(), userIds);
 		ticketRepository.save(ticket);
 		return ticket;
@@ -112,11 +119,15 @@ public class TicketServiceImpl implements TicketService {
 		for (Ticket ticket : tickets) {
 			// get owner's username
 			String owner = userService.findByUserId(ticket.getOwnerId()).getUsername();
-			// get members' usernames
+			// get members' usernames - which members can be null cause MongoDB error
 			List<String> members = new ArrayList<String>();
-			List<User> users = userService.findByUserIds(ticket.getMemberIds());
-			for (User user : users) {
-				members.add(user.getUsername());
+			try {
+				List<User> users = userService.findByUserIds(ticket.getMemberIds());
+				for (User user : users) {
+					members.add(user.getUsername());
+				}
+			} catch (Exception e) {
+
 			}
 			// create new single-ticket info
 			TicketInfo ticketInfo = new TicketInfo();
@@ -133,7 +144,5 @@ public class TicketServiceImpl implements TicketService {
 		}
 		return ticketsInfo;
 	}
-	
-	
 
 }

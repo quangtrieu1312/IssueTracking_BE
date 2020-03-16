@@ -26,16 +26,20 @@ public class TicketRepositoryImpl implements TicketRepositoryExtend {
 
 	@Autowired
 	MongoTemplate mongoTemplate;
-	
+
 	@Autowired
 	UserService userService;
 
 	@Override
 	public Ticket update(String ticketId, TicketRequest request) throws BadInputException {
-		List<User> users = userService.findByUsernames(request.getMembers());
 		List<String> memberIds = new ArrayList<String>();
-		for (User user: users) {
-			memberIds.add(user.getUserId());
+		try {
+			List<User> users = userService.findByUsernames(request.getMembers());
+			for (User user : users) {
+				memberIds.add(user.getUserId());
+			}
+		} catch (Exception e) {
+
 		}
 		Query query = new Query(Criteria.where("ticketId").is(ticketId));
 		Update update = new Update();

@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,6 +25,9 @@ import com.trieutruong.webpage.service.UserService;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	Environment env;
 
 	@Bean
 	public PasswordEncoder encoder() {
@@ -44,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(Arrays.asList("http://projectzero.trieutruong.com"));
+		String corsOrigin = env.getProperty("cors.origin");
+		configuration.setAllowedOrigins(Arrays.asList(corsOrigin.split(",")));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "OPTIONS"));
 		configuration.setAllowedHeaders(Arrays.asList("origin", "content-type", "accept"));
 		configuration.setAllowCredentials(true);

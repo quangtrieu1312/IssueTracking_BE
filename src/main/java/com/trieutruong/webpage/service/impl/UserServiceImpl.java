@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserService {
 			User user = this.findByUserId(userId);
 			return user;
 		}
-		return null;
+		throw new BadInputException("Cannot find user");
 	}
 
 	@Override

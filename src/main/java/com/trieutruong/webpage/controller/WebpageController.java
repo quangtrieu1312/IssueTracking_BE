@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,13 +50,8 @@ public class WebpageController {
 	QuartzSchedulerService quartzSchedulerService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String homePage() throws SchedulerException, IOException {
-		/*
-		 * List<Ticket> tickets =
-		 * ticketService.findByAlertMode(Boolean.TRUE.toString()); for (Ticket ticket :
-		 * tickets) quartzSchedulerService.startJob(ticket.getTicketId());
-		 */
-		return "Home page";
+	public String home() throws SchedulerException, IOException {
+		return "home";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -63,20 +61,11 @@ public class WebpageController {
 		return new GeneralModelResponse().successResponse("Successful login");
 	}
 
-	@RequestMapping(value = "/testUser", method = RequestMethod.GET)
-	public String testUserPage() {
-		return "testUser";
-	}
-
-	@RequestMapping(value = "/testAdmin", method = RequestMethod.GET)
-	public String testAdminPage() {
-		return "testAdmin";
-	}
-
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	public GeneralModelResponse signUp(@RequestBody SignUpRequest req) throws IOException, BadInputException {
 		userService.signUp(req);
-		return new GeneralModelResponse().successResponse("Successfully signed-up, please check your email to activate account");
+		return new GeneralModelResponse()
+				.successResponse("Successfully signed-up, please check your email to activate account");
 	}
 
 	@RequestMapping(value = "/user/id/{userIds}", method = RequestMethod.GET)
@@ -108,10 +97,13 @@ public class WebpageController {
 	}
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.GET)
-	public TicketResponse getAllTicket(HttpServletRequest httpRequest) throws BadInputException {
-		List<Ticket> tickets = ticketService.findByHttpRequest(httpRequest);
-		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
-		return new TicketResponse("Successful get tickets", ticketsInfo);
+	public Page<TicketInfo> getPageAllTicket(Pageable pageable, HttpServletRequest httpRequest)
+			throws BadInputException {
+		Page<Ticket> ticketsPage = ticketService.findPageByHttpRequest(pageable, httpRequest);
+		List<Ticket> tickets = ticketsPage.getContent();
+		Page<TicketInfo> ticketsInfoPage = new PageImpl<TicketInfo>(ticketService.convertTicketToTicketInfo(tickets),
+				pageable, tickets.size());
+		return ticketsInfoPage;
 	}
 
 	@RequestMapping(value = "/ticket/{ticketId}", method = RequestMethod.GET)
@@ -132,7 +124,7 @@ public class WebpageController {
 	public TicketResponse postTicket(@RequestBody TicketRequest request, HttpServletRequest httpRequest)
 			throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.create(request, httpRequest);
-		if (ticket.getAlert().getMode()== true){
+		if (ticket.getAlert().getMode() == true) {
 			quartzSchedulerService.startJob(ticket.getTicketId());
 		}
 		List<Ticket> tickets = new ArrayList<Ticket>();
@@ -143,18 +135,27 @@ public class WebpageController {
 
 	@RequestMapping(value = "/ticket/{ticketId}", method = RequestMethod.PUT)
 	public TicketResponse putTicket(@PathVariable(value = "ticketId") String ticketId,
-			@RequestBody TicketRequest request, HttpServletRequest httpRequest) throws BadInputException, SchedulerException, IOException {
+			@RequestBody TicketRequest request, HttpServletRequest httpRequest)
+			throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.update(ticketId, request, httpRequest);
-		if (ticket.getAlert().getMode()== true){
+		if (ticket.getAlert().getMode() == true) {
 			quartzSchedulerService.startJob(ticket.getTicketId());
-		}
-		else
-		{
+		} else {
 			quartzSchedulerService.stopJob(ticket.getTicketId());
 		}
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
 		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
 		return new TicketResponse("Successful update ticket", ticketsInfo);
+	}
+
+	@RequestMapping(value = "ticket/{ticketId}", method = RequestMethod.DELETE)
+	public TicketResponse deleteTicket(@PathVariable(value = "ticketId") String ticketId,
+			HttpServletRequest httpRequest) throws BadInputException {
+		Ticket ticket = ticketService.delete(ticketId, httpRequest);
+		List<Ticket> tickets = new ArrayList<Ticket>();
+		tickets.add(ticket);
+		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
+		return new TicketResponse("Successful delete ticket", ticketsInfo);
 	}
 }

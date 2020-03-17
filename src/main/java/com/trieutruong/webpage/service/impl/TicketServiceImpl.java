@@ -6,6 +6,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.trieutruong.webpage.domain.Ticket;
@@ -47,8 +49,18 @@ public class TicketServiceImpl implements TicketService {
 
 	@Override
 	public Ticket deleteByTicketId(String ticketId) {
-		// TODO Auto-generated method stub
-		return null;
+		return ticketRepository.deleteByTicketId(ticketId);
+	}
+
+	@Override
+	public Ticket delete(String ticketId, HttpServletRequest httpRequest) throws BadInputException {
+		User owner = userService.findByHttpRequest(httpRequest);
+		Ticket ticket = ticketRepository.findByTicketId(ticketId);
+		if (owner.getUserId().equals(ticket.getOwnerId())) {
+			// return ticketRepository.deleteByTicketId(ticketId);
+			return null;
+		} else
+			throw new BadInputException("Only ticket owner can delete ticket!");
 	}
 
 	@Override
@@ -143,6 +155,13 @@ public class TicketServiceImpl implements TicketService {
 			ticketsInfo.add(ticketInfo);
 		}
 		return ticketsInfo;
+	}
+
+	@Override
+	public Page<Ticket> findPageByHttpRequest(Pageable pageable, HttpServletRequest httpRequest)
+			throws BadInputException {
+		User user = userService.findByHttpRequest(httpRequest);
+		return ticketRepository.findPageByUserId(user.getUserId(), pageable);
 	}
 
 }

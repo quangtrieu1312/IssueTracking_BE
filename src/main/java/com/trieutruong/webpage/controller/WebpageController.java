@@ -103,7 +103,7 @@ public class WebpageController {
 		Page<Ticket> ticketsPage = ticketService.findPageByHttpRequest(pageable, httpRequest);
 		List<Ticket> tickets = ticketsPage.getContent();
 		Page<TicketInfo> ticketsInfoPage = new PageImpl<TicketInfo>(ticketService.convertTicketToTicketInfo(tickets),
-				pageable, tickets.size());
+				pageable, ticketsPage.getTotalElements());
 		return ticketsInfoPage;
 	}
 

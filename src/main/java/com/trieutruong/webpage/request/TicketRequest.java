@@ -2,6 +2,8 @@ package com.trieutruong.webpage.request;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.trieutruong.webpage.constant.TicketStatus;
 import com.trieutruong.webpage.model.Alert;
 
@@ -10,6 +12,7 @@ public class TicketRequest {
 	private String name;
 	private String status = TicketStatus.DEFAULT;
 	private String description;
+	@Valid
 	private Alert alert;
 	private List<String> emails;
 	private List<String> members;

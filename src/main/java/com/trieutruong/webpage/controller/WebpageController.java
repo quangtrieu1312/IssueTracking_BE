@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,7 @@ public class WebpageController {
 	}
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.POST)
-	public TicketResponse postTicket(@RequestBody TicketRequest request, HttpServletRequest httpRequest)
+	public TicketResponse postTicket(@Valid @RequestBody TicketRequest request, HttpServletRequest httpRequest)
 			throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.create(request, httpRequest);
 		if (ticket.getAlert().getMode() == true) {
@@ -135,7 +136,7 @@ public class WebpageController {
 
 	@RequestMapping(value = "/ticket/{ticketId}", method = RequestMethod.PUT)
 	public TicketResponse putTicket(@PathVariable(value = "ticketId") String ticketId,
-			@RequestBody TicketRequest request, HttpServletRequest httpRequest)
+			@Valid @RequestBody TicketRequest request, HttpServletRequest httpRequest)
 			throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.update(ticketId, request, httpRequest);
 		if (ticket.getAlert().getMode() == true) {

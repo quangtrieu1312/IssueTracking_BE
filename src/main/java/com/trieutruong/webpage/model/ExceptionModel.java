@@ -4,7 +4,7 @@ public class ExceptionModel extends GeneralModelResponse{
 	
 	private String error;
 
-	public ExceptionModel(String error, String msg) {
+	public ExceptionModel(String msg,String error) {
 		super.setStatus(Boolean.FALSE.toString());
 		this.error = error;
 		super.setMsg(msg);

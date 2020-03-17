@@ -2,9 +2,12 @@ package com.trieutruong.webpage.model;
 
 import java.util.Date;
 
+import com.trieutruong.webpage.annotation.ValidCron;
+
 public class Alert {
-	private Boolean mode;
+	private Boolean mode = false;
 	private Date alertTime;
+	@ValidCron
 	private String cronExpression;
 	public Alert() {
 		

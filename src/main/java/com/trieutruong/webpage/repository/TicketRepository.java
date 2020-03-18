@@ -17,8 +17,8 @@ public interface TicketRepository extends MongoRepository<Ticket, String>, Ticke
 	@Query("{ 'ticketId' : ?0 }")
 	Ticket findByTicketId(String ticketId);
 	
-	@Query("{ $or: [{ userIds : ?0 }, { ownerId: ?0 }]}")
-	List<Ticket> findByUserId(String userId);
+	@Query("{ $or: [{ memberIds : ?0 }, { ownerId: ?0 }]}")
+	List<Ticket> findByMemberIdsOrOwnerId(String userId);
 
 	@Query("{ 'alert.mode' : ?0 }")
 	List<Ticket> findByAlertMode(Boolean mode);
@@ -26,7 +26,7 @@ public interface TicketRepository extends MongoRepository<Ticket, String>, Ticke
 	@DeleteQuery
 	Long deleteByTicketId(String ticketId);
 
-	@Query("{ $or: [{ userIds : ?0 }, { ownerId: ?0 }]}")
-	Page<Ticket> findPageByUserId(String userId, Pageable pageable);
+	@Query("{ $or: [{ memberIds : ?0 }, { ownerId: ?0 }]}")
+	Page<Ticket> findPageByMemberIdsOrOwnerId(String userId, Pageable pageable);
 
 }

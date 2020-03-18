@@ -72,7 +72,7 @@ public class TicketServiceImpl implements TicketService {
 	@Override
 	public List<Ticket> findByHttpRequest(HttpServletRequest httpRequest) throws BadInputException {
 		User user = userService.findByHttpRequest(httpRequest);
-		return ticketRepository.findByUserId(user.getUserId());
+		return ticketRepository.findByMemberIdsOrOwnerId(user.getUserId());
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public class TicketServiceImpl implements TicketService {
 	public Page<Ticket> findPageByHttpRequest(Pageable pageable, HttpServletRequest httpRequest)
 			throws BadInputException {
 		User user = userService.findByHttpRequest(httpRequest);
-		return ticketRepository.findPageByUserId(user.getUserId(), pageable);
+		return ticketRepository.findPageByMemberIdsOrOwnerId(user.getUserId(), pageable);
 	}
 
 }

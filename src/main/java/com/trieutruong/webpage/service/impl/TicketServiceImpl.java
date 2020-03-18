@@ -173,4 +173,11 @@ public class TicketServiceImpl implements TicketService {
 		return ticketRepository.findPageByMemberIdsOrOwnerId(user.getUserId(), pageable);
 	}
 
+	@Override
+	public Page<Ticket> findPageBySearchBoxAndHttpRequest(String searchBox, Pageable pageable,
+			HttpServletRequest httpRequest) throws BadInputException {
+		User user = userService.findByHttpRequest(httpRequest);
+		return ticketRepository.findPageByMemberIdsOrOwnerIdAndSearchBox(user.getUserId(), searchBox, pageable);
+	}
+
 }

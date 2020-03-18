@@ -39,4 +39,6 @@ public interface TicketService {
 
 	Page<Ticket> findPageByHttpRequest(Pageable pageable, HttpServletRequest httpRequest) throws BadInputException;
 
+	Page<Ticket> findPageBySearchBoxAndHttpRequest(String searchBox, Pageable pageable, HttpServletRequest httpRequest) throws BadInputException;
+
 }

@@ -29,4 +29,7 @@ public interface TicketRepository extends MongoRepository<Ticket, String>, Ticke
 	@Query("{ $or: [{ memberIds : ?0 }, { ownerId: ?0 }]}")
 	Page<Ticket> findPageByMemberIdsOrOwnerId(String userId, Pageable pageable);
 
+	@Query("{$and: [{ $or : [{ memberIds : ?0 }, { ownerId: ?0 }] }, { $or : [{ name : { $regex : ?1 } }, { description : { $regex : ?1 }}] }] }")
+	Page<Ticket> findPageByMemberIdsOrOwnerIdAndSearchBox(String userId, String searchBox, Pageable pageable);
+
 }

@@ -112,13 +112,14 @@ public class WebpageController {
 			throws BadInputException {
 		Ticket ticket = ticketService.findByTicketId(ticketId);
 		User user = userService.findByHttpRequest(httpRequest);
-		if (user.getUserId().equals(ticket.getOwnerId())) {
+		if (ticket.getOwnerId().equals(user.getUserId()) || ticket.getMemberIds().contains(user.getUserId())) {
 			List<Ticket> tickets = new ArrayList<Ticket>();
 			tickets.add(ticket);
 			List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
 			return new TicketResponse("Successful get ticket", ticketsInfo);
-		} else
-			return null;
+		} else {
+			throw new BadInputException("Do not have authority to view ticket");
+		}
 	}
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.POST)

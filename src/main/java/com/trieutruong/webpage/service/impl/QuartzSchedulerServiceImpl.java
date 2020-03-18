@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.trieutruong.webpage.domain.Ticket;
+import com.trieutruong.webpage.exception.BadInputException;
 import com.trieutruong.webpage.job.AlertTicketJob;
 import com.trieutruong.webpage.joblistener.AlertTicketJobListener;
 import com.trieutruong.webpage.repository.TicketRepository;
@@ -32,7 +33,7 @@ public class QuartzSchedulerServiceImpl implements QuartzSchedulerService {
 	Scheduler scheduler;
 
 	@Override
-	public void startJob(String ticketId) throws SchedulerException, IOException {
+	public void startJob(String ticketId) throws SchedulerException, IOException, BadInputException {
 
 		Ticket ticket = ticketService.findByTicketId(ticketId);
 		JobKey jobKey = new JobKey(ticket.getTicketId(), ticket.getOwnerId());
@@ -54,7 +55,7 @@ public class QuartzSchedulerServiceImpl implements QuartzSchedulerService {
 	}
 
 	@Override
-	public void stopJob(String ticketId) throws SchedulerException {
+	public void stopJob(String ticketId) throws SchedulerException, BadInputException {
 		Ticket ticket = ticketService.findByTicketId(ticketId);
 		if (ticket == null) {
 			// throw new BadInputException("Can not find script with id: " + script_id);

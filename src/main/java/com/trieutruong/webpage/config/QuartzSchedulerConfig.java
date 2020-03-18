@@ -27,10 +27,15 @@ public class QuartzSchedulerConfig {
 	QuartzSchedulerService quartzSchedulerService;
 
 	@PostConstruct
-	public void initScript() throws Exception {
+	public void initScript() {
 		System.out.print("Init quartz");
-		List<Ticket> tickets = ticketService.findByAlertMode(Boolean.TRUE);
-		for (Ticket ticket : tickets)
-			quartzSchedulerService.startJob(ticket.getTicketId());
+		try {
+			List<Ticket> tickets = ticketService.findByAlertMode(Boolean.TRUE);
+			for (Ticket ticket : tickets)
+				quartzSchedulerService.startJob(ticket.getTicketId());
+		}
+		catch (Exception e) {
+			System.out.print("Cannot innit tickets");
+		}
 	}
 }

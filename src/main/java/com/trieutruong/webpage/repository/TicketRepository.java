@@ -14,6 +14,7 @@ import com.trieutruong.webpage.request.TicketRequest;
 
 public interface TicketRepository extends MongoRepository<Ticket, String>, TicketRepositoryExtend{
 	
+	@Query("{ 'ticketId' : ?0 }")
 	Ticket findByTicketId(String ticketId);
 	
 	@Query("{ $or: [{ userIds : ?0 }, { ownerId: ?0 }]}")
@@ -23,7 +24,7 @@ public interface TicketRepository extends MongoRepository<Ticket, String>, Ticke
 	List<Ticket> findByAlertMode(Boolean mode);
 
 	@DeleteQuery
-	Ticket deleteByTicketId(String ticketId);
+	Long deleteByTicketId(String ticketId);
 
 	@Query("{ $or: [{ userIds : ?0 }, { ownerId: ?0 }]}")
 	Page<Ticket> findPageByUserId(String userId, Pageable pageable);

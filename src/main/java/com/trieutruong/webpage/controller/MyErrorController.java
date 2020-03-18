@@ -15,7 +15,7 @@ public class MyErrorController implements ErrorController {
 	public ExceptionModel handleError(HttpServletRequest request) {
 		Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
 
-		if (statusCode == null) {
+		if (statusCode == null || statusCode == 500) {
 			statusCode = 500;
 			return new ExceptionModel(statusCode.toString(), "Unexpected error, please report to admin");
 		} else {

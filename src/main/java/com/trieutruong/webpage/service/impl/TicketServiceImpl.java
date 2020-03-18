@@ -48,17 +48,23 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public Ticket deleteByTicketId(String ticketId) {
+	public Long deleteByTicketId(String ticketId) {
 		return ticketRepository.deleteByTicketId(ticketId);
 	}
 
 	@Override
 	public Ticket delete(String ticketId, HttpServletRequest httpRequest) throws BadInputException {
 		User owner = userService.findByHttpRequest(httpRequest);
+		if (owner == null) {
+			throw new BadInputException("No user found");
+		}
 		Ticket ticket = ticketRepository.findByTicketId(ticketId);
+		if (ticket == null) {
+			throw new BadInputException("No ticket found");
+		}
 		if (owner.getUserId().equals(ticket.getOwnerId())) {
-			// return ticketRepository.deleteByTicketId(ticketId);
-			return null;
+			Long res = ticketRepository.deleteByTicketId(ticketId);
+			return ticket;
 		} else
 			throw new BadInputException("Only ticket owner can delete ticket!");
 	}
@@ -121,8 +127,12 @@ public class TicketServiceImpl implements TicketService {
 	}
 
 	@Override
-	public Ticket findByTicketId(String ticketId) {
-		return ticketRepository.findByTicketId(ticketId);
+	public Ticket findByTicketId(String ticketId) throws BadInputException {
+		Ticket ticket = ticketRepository.findByTicketId(ticketId);
+		if (ticket == null) {
+			throw new BadInputException("No ticket found");
+		}
+		else return ticket;
 	}
 
 	@Override

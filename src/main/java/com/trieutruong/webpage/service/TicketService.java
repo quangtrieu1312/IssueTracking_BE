@@ -23,7 +23,7 @@ public interface TicketService {
 	
 	Ticket setStatusByTicketId(String ticketId);
 	
-	Ticket deleteByTicketId(String ticketId);
+	Long deleteByTicketId(String ticketId);
 	
 	List<Ticket> findByHttpRequest(HttpServletRequest httpRequest) throws BadInputException;
 
@@ -31,7 +31,7 @@ public interface TicketService {
 
 	List<Ticket> findByAlertMode(Boolean mode);
 
-	Ticket findByTicketId(String ticketId);
+	Ticket findByTicketId(String ticketId) throws BadInputException;
 
 	List<TicketInfo> convertTicketToTicketInfo(List<Ticket> tickets) throws BadInputException;
 

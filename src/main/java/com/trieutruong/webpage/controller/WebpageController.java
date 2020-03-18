@@ -98,10 +98,8 @@ public class WebpageController {
 	}
 
 	@RequestMapping(value = "/ticket", method = RequestMethod.GET)
-	public Page<TicketInfo> getPageAllTicket(@RequestParam(value = "searchBox") String searchBox, Pageable pageable,
-			HttpServletRequest httpRequest) throws BadInputException {
-		if (searchBox == null)
-			searchBox = "";
+	public Page<TicketInfo> getPageAllTicket(@RequestParam(value = "searchBox", required = true) String searchBox,
+			Pageable pageable, HttpServletRequest httpRequest) throws BadInputException {
 		Page<Ticket> ticketsPage = ticketService.findPageBySearchBoxAndHttpRequest(searchBox, pageable, httpRequest);
 		List<Ticket> tickets = ticketsPage.getContent();
 		Page<TicketInfo> ticketsInfoPage = new PageImpl<TicketInfo>(ticketService.convertTicketToTicketInfo(tickets),

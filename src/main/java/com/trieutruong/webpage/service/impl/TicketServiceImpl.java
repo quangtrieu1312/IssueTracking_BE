@@ -113,12 +113,11 @@ public class TicketServiceImpl implements TicketService {
 			// throw exception
 			return null;
 		}
-		if (ticket.getOwnerId().equals(user.getUserId())) {
+		if (ticket.getOwnerId().equals(user.getUserId()) || ticket.getMemberIds().contains(user.getUserId())) {
 			return ticketRepository.update(ticketId, request);
 		} else {
-			// throw exception
+			throw new BadInputException("No authority to update ticket");
 		}
-		return null;
 	}
 
 	@Override

@@ -118,7 +118,7 @@ public class WebpageController {
 			List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
 			return new TicketResponse("Successful get ticket", ticketsInfo);
 		} else {
-			throw new BadInputException("Do not have authority to view ticket");
+			throw new BadInputException("No authority to view ticket");
 		}
 	}
 

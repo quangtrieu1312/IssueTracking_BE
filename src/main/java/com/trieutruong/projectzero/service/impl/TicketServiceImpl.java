@@ -1,0 +1,183 @@
+package com.trieutruong.projectzero.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.trieutruong.projectzero.domain.Ticket;
+import com.trieutruong.projectzero.domain.User;
+import com.trieutruong.projectzero.exception.BadInputException;
+import com.trieutruong.projectzero.model.TicketInfo;
+import com.trieutruong.projectzero.repository.TicketRepository;
+import com.trieutruong.projectzero.request.TicketRequest;
+import com.trieutruong.projectzero.service.TicketService;
+import com.trieutruong.projectzero.service.UserService;
+import com.trieutruong.projectzero.util.RandomUtil;
+
+@Service
+public class TicketServiceImpl implements TicketService {
+
+	@Autowired
+	TicketRepository ticketRepository;
+
+	@Autowired
+	UserService userService;
+
+	@Override
+	public Ticket create(Ticket ticket) {
+		ticketRepository.save(ticket);
+		return ticket;
+	}
+
+	@Override
+	public List<Ticket> findByUserId(String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Ticket setStatusByTicketId(String ticketId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long deleteByTicketId(String ticketId) {
+		return ticketRepository.deleteByTicketId(ticketId);
+	}
+
+	@Override
+	public Ticket delete(String ticketId, HttpServletRequest httpRequest) throws BadInputException {
+		User owner = userService.findByHttpRequest(httpRequest);
+		if (owner == null) {
+			throw new BadInputException("No user found");
+		}
+		Ticket ticket = ticketRepository.findByTicketId(ticketId);
+		if (ticket == null) {
+			throw new BadInputException("No ticket found");
+		}
+		if (owner.getUserId().equals(ticket.getOwnerId())) {
+			Long res = ticketRepository.deleteByTicketId(ticketId);
+			return ticket;
+		} else
+			throw new BadInputException("Only ticket owner can delete ticket!");
+	}
+
+	@Override
+	public List<Ticket> findByHttpRequest(HttpServletRequest httpRequest) throws BadInputException {
+		User user = userService.findByHttpRequest(httpRequest);
+		return ticketRepository.findByMemberIdsOrOwnerId(user.getUserId());
+	}
+
+	@Override
+	public Ticket create(TicketRequest request, HttpServletRequest httpRequest) throws BadInputException {
+		String ticketId = RandomUtil.generateId();
+		User owner = userService.findByHttpRequest(httpRequest);
+		while (ticketRepository.findByTicketId(ticketId) != null) {
+			ticketId = RandomUtil.generateId();
+		}
+		List<String> userIds = new ArrayList<String>();
+		try {
+
+			List<User> users = userService.findByUsernames(request.getMembers());
+
+			for (User userIterator : users) {
+				userIds.add(userIterator.getUserId());
+			}
+
+		} catch (Exception e) {
+
+		}
+		Ticket ticket = new Ticket(ticketId, owner.getUserId(), request.getName(), request.getStatus(),
+				request.getDescription(), request.getAlert(), request.getEmails(), userIds);
+		ticketRepository.save(ticket);
+		return ticket;
+	}
+
+	@Override
+	public Ticket update(String ticketId, TicketRequest request, HttpServletRequest httpRequest)
+			throws BadInputException {
+		User user = userService.findByHttpRequest(httpRequest);
+		if (user == null) {
+			// throw exception
+			return null;
+		}
+		Ticket ticket = ticketRepository.findByTicketId(ticketId);
+		if (ticket == null) {
+			// throw exception
+			return null;
+		}
+		if (ticket.getOwnerId().equals(user.getUserId()) || ticket.getMemberIds().contains(user.getUserId())) {
+			return ticketRepository.update(ticketId, request);
+		} else {
+			throw new BadInputException("No authority to update ticket");
+		}
+	}
+
+	@Override
+	public List<Ticket> findByAlertMode(Boolean mode) {
+		return ticketRepository.findByAlertMode(mode);
+	}
+
+	@Override
+	public Ticket findByTicketId(String ticketId) throws BadInputException {
+		Ticket ticket = ticketRepository.findByTicketId(ticketId);
+		if (ticket == null) {
+			throw new BadInputException("No ticket found");
+		}
+		else return ticket;
+	}
+
+	@Override
+	public List<TicketInfo> convertTicketToTicketInfo(List<Ticket> tickets) throws BadInputException {
+		List<TicketInfo> ticketsInfo = new ArrayList<TicketInfo>();
+		for (Ticket ticket : tickets) {
+			// get owner's username
+			String owner = userService.findByUserId(ticket.getOwnerId()).getUsername();
+			// get members' usernames - which members can be null cause MongoDB error
+			List<String> members = new ArrayList<String>();
+			try {
+				List<User> users = userService.findByUserIds(ticket.getMemberIds());
+				for (User user : users) {
+					members.add(user.getUsername());
+				}
+			} catch (Exception e) {
+
+			}
+			// create new single-ticket info
+			TicketInfo ticketInfo = new TicketInfo();
+			ticketInfo.setTicketId(ticket.getTicketId());
+			ticketInfo.setName(ticket.getName());
+			ticketInfo.setOwner(owner);
+			ticketInfo.setStatus(ticket.getStatus());
+			ticketInfo.setAlert(ticket.getAlert());
+			ticketInfo.setMembers(members);
+			ticketInfo.setEmails(ticket.getEmails());
+			ticketInfo.setDescription(ticket.getDescription());
+			// add single-ticket info to list
+			ticketsInfo.add(ticketInfo);
+		}
+		return ticketsInfo;
+	}
+
+	@Override
+	public Page<Ticket> findPageByHttpRequest(Pageable pageable, HttpServletRequest httpRequest)
+			throws BadInputException {
+		User user = userService.findByHttpRequest(httpRequest);
+		return ticketRepository.findPageByMemberIdsOrOwnerId(user.getUserId(), pageable);
+	}
+
+	@Override
+	public Page<Ticket> findPageBySearchBoxAndHttpRequest(String searchBox, Pageable pageable,
+			HttpServletRequest httpRequest) throws BadInputException {
+		User user = userService.findByHttpRequest(httpRequest);
+		return ticketRepository.findPageByMemberIdsOrOwnerIdAndSearchBox(user.getUserId(), searchBox, pageable);
+	}
+
+}

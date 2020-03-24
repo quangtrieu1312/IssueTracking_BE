@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.trieutruong</groupId>
-	<artifactId>webpage</artifactId>
+	<artifactId>projectzero</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>webpage</name>
-	<description>Trieu Truong's webpage</description>
+	<name>projectzero</name>
+	<description>Task managing web</description>
 
 	<properties>
 		<java.version>1.8</java.version>

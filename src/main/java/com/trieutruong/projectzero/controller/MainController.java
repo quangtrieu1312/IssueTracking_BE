@@ -3,11 +3,13 @@ package com.trieutruong.projectzero.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.assertj.core.util.Arrays;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ import com.trieutruong.projectzero.request.LoginRequest;
 import com.trieutruong.projectzero.request.SignUpRequest;
 import com.trieutruong.projectzero.request.TicketRequest;
 import com.trieutruong.projectzero.response.TicketResponse;
+import com.trieutruong.projectzero.response.TimezoneResponse;
 import com.trieutruong.projectzero.response.UserResponse;
 import com.trieutruong.projectzero.service.EmailService;
 import com.trieutruong.projectzero.service.QuartzSchedulerService;
@@ -36,7 +39,7 @@ import com.trieutruong.projectzero.service.TicketService;
 import com.trieutruong.projectzero.service.UserService;
 
 @RestController
-public class WebpageController {
+public class MainController {
 
 	@Autowired
 	UserService userService;
@@ -161,5 +164,15 @@ public class WebpageController {
 		tickets.add(ticket);
 		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);
 		return new TicketResponse("Successful delete ticket", ticketsInfo);
+	}
+
+	@RequestMapping(value = "/timezone", method = RequestMethod.GET)
+	public TimezoneResponse getTimezone() throws BadInputException {
+		String[] validIDs = TimeZone.getAvailableIDs();
+		List<String> timezones = new ArrayList<String>();
+		for (String id : validIDs) {
+			timezones.add(id);
+		}
+		return new TimezoneResponse("Get timezones successfully", timezones);
 	}
 }

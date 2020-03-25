@@ -24,7 +24,7 @@ public class Timezones {
 
 
 	@PostConstruct
-	private void initTimezones() {
+	private void init() {
 		String[] validIDs = TimeZone.getAvailableIDs();
 		for (String id : validIDs) {
 			this.timezones.add(id);

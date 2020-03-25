@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.trieutruong.projectzero.constant.Timezones;
 import com.trieutruong.projectzero.domain.Ticket;
 import com.trieutruong.projectzero.domain.User;
 import com.trieutruong.projectzero.exception.BadInputException;
@@ -48,6 +49,9 @@ public class MainController {
 
 	@Autowired
 	TicketService ticketService;
+	
+	@Autowired
+	Timezones timezones;
 
 	@Autowired
 	QuartzSchedulerService quartzSchedulerService;
@@ -167,11 +171,6 @@ public class MainController {
 
 	@RequestMapping(value = "/timezone", method = RequestMethod.GET)
 	public TimezoneResponse getTimezone() throws BadInputException {
-		String[] validIDs = TimeZone.getAvailableIDs();
-		List<String> timezones = new ArrayList<String>();
-		for (String id : validIDs) {
-			timezones.add(id);
-		}
-		return new TimezoneResponse("Get timezones successfully", timezones);
+		return new TimezoneResponse("Get timezones successfully", timezones.getTimezones());
 	}
 }

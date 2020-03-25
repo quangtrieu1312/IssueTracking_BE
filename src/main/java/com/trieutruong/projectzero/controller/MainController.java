@@ -147,10 +147,13 @@ public class MainController {
 			@Valid @RequestBody TicketRequest request, HttpServletRequest httpRequest)
 			throws BadInputException, SchedulerException, IOException {
 		Ticket ticket = ticketService.update(ticketId, request, httpRequest);
-		if (ticket.getAlert().getMode() == true) {
-			quartzSchedulerService.startJob(ticket.getTicketId());
-		} else {
+		try {
 			quartzSchedulerService.stopJob(ticket.getTicketId());
+		} catch (Exception e) {
+
+		}
+		if (ticket.getAlert().getMode()) {
+			quartzSchedulerService.startJob(ticket.getTicketId());
 		}
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
@@ -162,6 +165,11 @@ public class MainController {
 	public TicketResponse deleteTicket(@PathVariable(value = "ticketId") String ticketId,
 			HttpServletRequest httpRequest) throws BadInputException {
 		Ticket ticket = ticketService.delete(ticketId, httpRequest);
+		try {
+			quartzSchedulerService.stopJob(ticket.getTicketId());
+		} catch (Exception e) {
+
+		}
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		tickets.add(ticket);
 		List<TicketInfo> ticketsInfo = ticketService.convertTicketToTicketInfo(tickets);

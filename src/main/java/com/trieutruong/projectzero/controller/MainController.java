@@ -48,7 +48,7 @@ public class MainController {
 
 	@Autowired
 	TicketService ticketService;
-	
+
 	@Autowired
 	Timezones timezones;
 
@@ -170,6 +170,11 @@ public class MainController {
 
 	@RequestMapping(value = "/timezone", method = RequestMethod.GET)
 	public TimezoneResponse getTimezone() throws BadInputException {
-		return new TimezoneResponse("Get timezones successfully", timezones.getTimezones());
+		try {
+			List<String> validTimezones = timezones.getTimezones();
+			return new TimezoneResponse("Get timezones successfully", validTimezones);
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 }

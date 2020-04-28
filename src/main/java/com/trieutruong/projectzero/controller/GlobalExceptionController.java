@@ -23,49 +23,45 @@ import com.trieutruong.projectzero.exception.BadInputException;
 import com.trieutruong.projectzero.model.ExceptionModel;
 
 @ControllerAdvice
-public class GlobalExceptionController extends ResponseEntityExceptionHandler{
+public class GlobalExceptionController extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(BadInputException.class)
 	public ResponseEntity<ExceptionModel> handleBadInputException(HttpServletRequest request, Exception ex) {
-		ExceptionModel response = new ExceptionModel("Bad input", ex.getMessage());
+		ExceptionModel response = new ExceptionModel(ex.getMessage(), "Bad input");
 		return new ResponseEntity<ExceptionModel>(response, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<ExceptionModel> handleBadCredentialsException(HttpServletRequest request, Exception ex) {
-		ExceptionModel response = new ExceptionModel("Wrong username/password", ex.getMessage());
+		ExceptionModel response = new ExceptionModel(ex.getMessage(), "Bad credentials");
 		return new ResponseEntity<ExceptionModel>(response, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(AccessDeniedException.class)
 	public ResponseEntity<ExceptionModel> handleForbiddenException(HttpServletRequest request, Exception ex) {
-		ExceptionModel response = new ExceptionModel("No authorization to access page", ex.getMessage());
+		ExceptionModel response = new ExceptionModel(ex.getMessage(), "Access denied");
 		return new ResponseEntity<ExceptionModel>(response, HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(SchedulerException.class)
 	public ResponseEntity<ExceptionModel> handleSchedulerExceptionException(HttpServletRequest request, Exception ex) {
-		ExceptionModel response = new ExceptionModel("Cannot schedule ticket", ex.getMessage());
+		ExceptionModel response = new ExceptionModel(ex.getMessage(),"Scheduer exception");
 		return new ResponseEntity<ExceptionModel>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
-	 @Override
-	    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-	                                                                  HttpHeaders headers,
-	                                                                  HttpStatus status, WebRequest request) {
 
-	        Map<String, Object> body = new LinkedHashMap<>();
-	        body.put("status", "false");
-	        body.put("error", "Invalid input");
-	        //Get all errors
-	        List<String> msg = ex.getBindingResult()
-	                .getFieldErrors()
-	                .stream()
-	                .map(x -> x.getDefaultMessage())
-	                .collect(Collectors.toList());
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-	        body.put("msg", msg);
+		Map<String, Object> body = new LinkedHashMap<>();
+		body.put("status", "false");
+		body.put("error", "Invalid input");
+		// Get all errors
+		List<String> msg = ex.getBindingResult().getFieldErrors().stream().map(x -> x.getDefaultMessage())
+				.collect(Collectors.toList());
 
-	        return new ResponseEntity<>(body, headers, status);
+		body.put("msg", msg);
 
-	    }
+		return new ResponseEntity<>(body, headers, status);
+
+	}
 }

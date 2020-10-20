@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
 		String jwt = tokenProvider.generateToken((User) authentication.getPrincipal());
 		Cookie cookie = new Cookie("AUTH_JWT", jwt);
 		cookie.setPath("/");
+		cookie.setSecure(true);
 		response.addCookie(cookie);
 	}
 
@@ -96,7 +97,8 @@ public class UserServiceImpl implements UserService {
 		if (!isValidUsername(req.getUsername()))
 			throw new BadInputException("Username must have at least 5 characters and no special chars");
 		if (!isValidPassword(req.getPassword()))
-				throw new BadInputException("Password must have at least: 10 character, 1 lowercase, 1 uppercase, 1 number, and 1 special char");
+			throw new BadInputException(
+					"Password must have at least: 10 character, 1 lowercase, 1 uppercase, 1 number, and 1 special char");
 		String userId = RandomUtil.generateId();
 		while (userRepository.findByUserId(userId) != null)
 			userId = RandomUtil.generateId();

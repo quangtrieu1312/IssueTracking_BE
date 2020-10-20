@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
-import com.sendgrid.Content;
-import com.sendgrid.Email;
-import com.sendgrid.Mail;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import com.trieutruong.project.request.EmailRequest;
 import com.trieutruong.project.service.EmailService;
 
@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
 
 	@Value("${sendgrid.api-key}")
 	String key;
-	
+
 	@Override
 	public void send(EmailRequest req) throws IOException {
 		Email from = new Email(req.getFrom());

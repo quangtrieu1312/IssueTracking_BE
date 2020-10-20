@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -23,7 +22,6 @@ import com.trieutruong.project.constant.UserRole;
 import com.trieutruong.project.domain.User;
 import com.trieutruong.project.exception.BadInputException;
 import com.trieutruong.project.repository.UserRepository;
-import com.trieutruong.project.request.ActivateRequest;
 import com.trieutruong.project.request.EmailRequest;
 import com.trieutruong.project.request.LoginRequest;
 import com.trieutruong.project.request.SignUpRequest;
